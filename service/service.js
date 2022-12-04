@@ -1,25 +1,33 @@
-const Contact = require('./schemas');
+const Contact = require('./schemas/contacts');
 
-const getAllContacts = async () => {
-  console.log(await Contact.find())
-  return await Contact.find();
+const getAllContacts = async (user) => {
+  const { docs: contacts, ...rest } = await Contact.paginate(
+    { owner: user.id },)
+  return { contacts, ...rest }
 };
 
-const getContactById = id => {
-  return Contact.findById(id);
+const getContactById = async(id,user) => {
+  const contact =await Contact.findOne({ _id: id, owner: user.id });
+  return contact
 };
 
-const createContact = ({ name, email, phone, favorite }) => {
-  return Contact.create({ name, email, phone, favorite })
+const createContact =async (body, user) => {
+  const contact =await Contact.create({ ...body, owner: user.id })
+  return contact
 }
 
-const updateContact = async (id, { name, email, phone, favorite }) => {
-  return await Contact.findByIdAndUpdate({ _id: id },
-     {$set:{ name, email, phone, favorite }});
+const updateContact = async (id, body,user) => {
+  const contact =await Contact.findOneAndUpdate(
+    { _id: id, owner: user.id },
+    { ...body },
+    { new: true },
+  )
+  return contact
 };
 
-const removeContact= id => {
-  return Contact.findByIdAndRemove({ _id: id });
+const removeContact= async(id,user) => {
+  const contact =await Contact.findOneAndRemove({ _id: id, owner: user.id });
+  return contact
 };
 
 

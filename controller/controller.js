@@ -2,9 +2,9 @@ const Joi = require('joi')
 const service = require('../service/service')
 
 const listContacts = async (req, res, next) => {
-
+console.log(req.user)
     try {
-      const results = await service.getAllContacts();
+      const results = await service.getAllContacts(req.user);
      
       res.json({
         status: 'success',
@@ -17,14 +17,11 @@ const listContacts = async (req, res, next) => {
       console.error(e);
       next(e);
     }
-  };
-// console.log(listContacts())
+  }
 const getContactById=async (req, res, next) => {
-    const { contactId } = req.params;
-   
-    try {
+       try {
       
-      const result = await service.getContactById(contactId);
+      const result = await service.getContactById(req.params.contactId, req.user);
       
       if (result) {
         res.json({
@@ -37,7 +34,7 @@ const getContactById=async (req, res, next) => {
         res.status(404).json({
           status: 'error',
           code: 404,
-          message: `Not found task id: ${contactId}}`,
+          message: `Not found task id: ${req.params.contactId}}`,
           data: 'Not Found',
         });
       }
@@ -62,7 +59,7 @@ const addContact=async (req, res, next) => {
     }
     if(value){
     try {
-      const result = await service.createContact(value);
+      const result = await service.createContact(req.body, req.user);
       if (result) {
         res.json({
           status: 'success',
@@ -83,9 +80,9 @@ const addContact=async (req, res, next) => {
     }}}
    
 const removeContact=async (req, res, next) => {
-    const { contactId } = req.params;
+   
     try {
-      const result = await service.removeContact(contactId);
+      const result = await service.removeContact(req.params.contactId, req.user);
       if (result) {
         res.json({
           status: 'success',
@@ -96,7 +93,7 @@ const removeContact=async (req, res, next) => {
         res.status(404).json({
           status: 'error',
           code: 404,
-          message: `Not found task id: ${contactId}`,
+          message: `Not found task id: ${req.params.contactId}`,
           data: 'Not Found',
         });
       }
@@ -117,10 +114,10 @@ const updateContact=async (req, res, next) => {
           return res.status(400).json({ message: "missing required name field" });
     }
     if(value){
-    const body = req.body;
+   
     const {contactId} = req.params; 
     try {
-      const result = await service.updateContact(contactId, body);
+      const result = await service.updateContact(req.params.contactId, req.body, req.user);
       if (result) {
         res.json({
           status: 'success',
@@ -153,10 +150,10 @@ const updateStatusContact=async (req, res, next) => {
         return res.status(400).json({ message: "missing required name field" });
   }
   if(value){
-  const body = req.body;
+ 
   const {contactId} = req.params; 
   try {
-    const result = await service.updateContact(contactId, body);
+    const result = await service.updateContactupdateContact(req.params.contactId, req.body, req.user);
     if (result) {
       res.json({
         status: 'success',

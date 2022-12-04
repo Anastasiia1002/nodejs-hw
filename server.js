@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const logger = require('morgan')
 const mongoose = require('mongoose');
-const routerApi = require("./routes/api/contacts");
+const contactRouterApi = require("./routes/api/contacts");
+const authRouterApi = require("./routes/api/authRouter");
 require('dotenv').config();
 
 const app = express();
@@ -20,8 +21,13 @@ app.use(
     optionsSuccessStatus: 204,
   }),
 )
-app.use(express.json());
-app.use('/', routerApi);
+
+
+ require('./config/config-passport')
+ app.use(express.json());
+ app.use('/', contactRouterApi);
+ app.use('/', authRouterApi);
+
 
 app.use((_, res, __) => {
   res.status(404).json({
@@ -41,7 +47,7 @@ app.use((err, _, res, __) => {
   });
 });
 
-// mongoose.Promise = global.Promise
+
 const connection =  mongoose.connect(uriDb, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -58,4 +64,5 @@ connection
     console.log(`Server not running. Error message: ${err.message}`)
     process.exit(1)
   })
+
  
