@@ -7,16 +7,16 @@ const {
   updateContact,
   updateStatusContact
 } = require("../../controller/controller");
+const {authMiddleware} = require("../../middleware/authMiddleware")
+const router = new express.Router();
 
-const router = express.Router();
-require('dotenv').config()
-
-router.get("/", listContacts);
-router.get("/:contactId",getContactById)
-router.post("/",addContact)
-router.delete("/:contactId",removeContact)
-router.put("/:contactId",updateContact)
-router.patch("/:contactId/favorite",updateStatusContact)
+router.use(authMiddleware)
+router.get("/contacts/", authMiddleware, listContacts);
+router.get("/contacts/:contactId",authMiddleware, getContactById)
+router.post("/contacts/",authMiddleware, addContact)
+router.delete("/contacts/:contactId",authMiddleware, removeContact)
+router.put("/contacts/:contactId",authMiddleware, updateContact)
+router.patch("/contacts/:contactId/favorite",authMiddleware, updateStatusContact)
 
 
-module.exports = router;
+module.exports = router
