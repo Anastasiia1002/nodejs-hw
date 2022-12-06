@@ -75,14 +75,31 @@ const logoutUser =  async (req, res) => {
   await User.findByIdAndUpdate(req.user.id, {token:null})
   }
 
-  const getUserData =  (req, res, next) => {
-    const { email, subscription } = req.user
+
+
+
+
+  const getUserData =  async (req, res, next) => {
+    const { authorization } = req.headers;
+    const [ token] = authorization.split(' ');
+  
+    const { _id } = jwt.verify(token, secret);
+  
+  
+    const currentUser = await User.findById(_id);
+  if (!currentUser){
+    return res.status(401 ).json({
+      status: 'error',
+      code: 401 ,
+      message: 'Not authorized',
+      data: 'Conflict',
+    })
+  }
     res.json({
       status: 'success',
       code: 200,
       data: {
-        email,
-        subscription,
+        currentUser
       },
     })
 
