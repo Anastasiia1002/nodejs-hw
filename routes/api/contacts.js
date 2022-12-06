@@ -10,7 +10,7 @@ const {
 const {authMiddleware} = require("../../middleware/authMiddleware")
 const router = new express.Router();
 
-router.use(authMiddleware)
+// router.use(authMiddleware)
 router.get("/contacts/", authMiddleware, listContacts);
 router.get("/contacts/:contactId",authMiddleware, getContactById)
 router.post("/contacts/",authMiddleware, addContact)

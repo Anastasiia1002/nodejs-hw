@@ -18,4 +18,5 @@ router.post('/users/register',registrationUser)
 router.get('/users/logout', authMiddleware, logoutUser)
 router.get('/users/current', authMiddleware, getUserData)
 
+
 module.exports = router

@@ -21,6 +21,7 @@ const contacts = new Schema( {
       type: Boolean,
       default: false,
     },
+    avatarURL: String,
   },
   { versionKey: false, timestamps: true },
   );

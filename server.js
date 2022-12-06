@@ -4,6 +4,7 @@ const logger = require('morgan')
 const mongoose = require('mongoose');
 const contactRouterApi = require("./routes/api/contacts");
 const authRouterApi = require("./routes/api/authRouter");
+const avatarsRoutesApi = require("./routes/api/avatarsRoutes");
 require('dotenv').config();
 
 const app = express();
@@ -24,10 +25,14 @@ app.use(
 
 
  require('./config/config-passport')
+ 
  app.use(express.json());
  app.use('/', contactRouterApi);
+ app.use('/', avatarsRoutesApi);
  app.use('/', authRouterApi);
 
+
+ app.use(express.static('public'));
 
 app.use((_, res, __) => {
   res.status(404).json({
