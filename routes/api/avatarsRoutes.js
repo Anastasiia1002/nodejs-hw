@@ -20,7 +20,7 @@ const storage = multer.diskStorage( {
 const uploadMiddleware = multer({storage});
 
 
-router.post('/users/avatars', uploadMiddleware.single("avatar"),authMiddleware, avatarsUser)
+router.patch('/users/avatars', uploadMiddleware.single("avatar"),authMiddleware, avatarsUser)
 router.use('/users/download', express.static(FILE_DIR))
 
 module.exports = router
