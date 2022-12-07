@@ -2,10 +2,7 @@ const User = require("../service/schemas/user")
 const jwt = require('jsonwebtoken')
 // const passport = require('passport')
 require('dotenv').config()
-// const {
-//     registration,
-//     // login
-// } = require('../service/authService')
+const gravatar = require('gravatar');
 const secret = process.env.SECRET
 
 
@@ -22,7 +19,8 @@ const registrationUser =  async (req, res, next) => {
     })
   }
   try {
-    const newUser = new User( {email, password, subscription});
+const avatarUrl = gravatar.url(email);
+    const newUser = new User( {email, password, subscription,avatarUrl});
     newUser.setPassword(password)
     await newUser.save()
         console.log(newUser )
@@ -105,20 +103,12 @@ const logoutUser =  async (req, res) => {
 
   }
 
-  // const currentUser = async (req, res) => {
-  //   res.json({
-  //     data: {
-  //       email: req.user.email,
-  //       subscription: req.user.subscription,
-  //     },
-  //   });
-  // };
+
 
   module.exports = { 
    loginUser,
    registrationUser,
    logoutUser,
    getUserData,
-  //  auth,
-  //  currentUser
+
   }
