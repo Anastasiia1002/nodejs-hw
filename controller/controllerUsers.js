@@ -3,7 +3,13 @@ const jwt = require('jsonwebtoken')
 // const passport = require('passport')
 require('dotenv').config()
 const gravatar = require('gravatar');
-const secret = process.env.SECRET
+const sgMail = require('@sendgrid/mail');
+const { v4: uuidv4 } = require('uuid');
+
+const secret = process.env.SECRET;
+const SENDER_EMAIL =  process.env.SENDER_EMAIL
+const PORT = process.env.PORT || 3000;
+
 
 
 const registrationUser =  async (req, res, next) => {
@@ -18,12 +24,27 @@ const registrationUser =  async (req, res, next) => {
       data: 'Conflict',
     })
   }
-  try {
+ 
+
+    const verificationToken = uuidv4();
 const avatarUrl = gravatar.url(email);
-    const newUser = new User( {email, password, subscription,avatarUrl});
+    const newUser = new User( {email, password, subscription,avatarUrl, verificationToken});
     newUser.setPassword(password)
+    console.log(newUser)
     await newUser.save()
-        console.log(newUser )
+
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    const msg = {
+      to: email,
+      from: SENDER_EMAIL, 
+      subject: 'Sending with Twilio SendGrid is Fun',
+      text: 'Please, verify you email',
+      html: `<a target="_blank" href="http://localhost:${PORT}/users/verify/${verificationToken}">Please, verify you email</a>`,
+    };
+    try {
+    await sgMail.send(msg)
+    console.log(msg);
+   
       res.status(201).json({
         status: 'success',
         code: 201,
@@ -33,6 +54,8 @@ const avatarUrl = gravatar.url(email);
       })}  catch (error) {
         next(error)
       }
+
+
     }
    
   
@@ -103,12 +126,30 @@ const logoutUser =  async (req, res) => {
 
   }
 
+const verifyTokenUser = async (req, res, next) => {
+  const { verificationToken } = req.params;
+  const user = await User.findOne({ verificationToken });
+  if (!user) {
+    res.status(404 ).json({
+      status: 'error',
+      code: 404 ,
+      message: 'User not found',
+      data: 'Conflict',
+    })
+  }
+  await User.findByIdAndUpdate(user._id, { verificationToken: null, verify: true });
+  res.json({
+    status: 'success',
+    code: 200,
+    message: 'Verification successful',
+  });
 
+}
 
   module.exports = { 
    loginUser,
    registrationUser,
    logoutUser,
    getUserData,
-
+verifyTokenUser
   }
